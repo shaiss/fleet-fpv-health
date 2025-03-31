@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   Table,
@@ -44,7 +43,6 @@ const DroneList: React.FC<DroneListProps> = ({ drones }) => {
   const [batteryFilter, setBatteryFilter] = useState<string | null>(null);
   const [selectedDrones, setSelectedDrones] = useState<Set<number>>(new Set());
 
-  // Extract unique values for filter dropdowns
   const uniqueTypes = React.useMemo(() => {
     const types = new Set<string>();
     drones.forEach(drone => {
@@ -105,15 +103,12 @@ const DroneList: React.FC<DroneListProps> = ({ drones }) => {
     setShowAdvancedFilters(false);
   };
 
-  // Apply filters
   const filteredDrones = React.useMemo(() => {
     return drones.filter(drone => {
-      // Text search
       const matchesSearch = drone.quadName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         drone.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (drone.notes && drone.notes.toLowerCase().includes(searchTerm.toLowerCase()));
       
-      // Status filter
       let matchesStatus = true;
       if (filterStatus) {
         if (filterStatus === 'ready') {
@@ -129,17 +124,14 @@ const DroneList: React.FC<DroneListProps> = ({ drones }) => {
         }
       }
       
-      // Type filter
       const matchesType = !droneType || drone.type === droneType;
       
-      // Battery filter
       const matchesBattery = !batteryFilter || drone.batteryType === batteryFilter;
       
       return matchesSearch && matchesStatus && matchesType && matchesBattery;
     });
   }, [drones, searchTerm, filterStatus, droneType, batteryFilter]);
 
-  // Apply sorting
   const sortedDrones = React.useMemo(() => {
     if (!sortConfig) return filteredDrones;
     
@@ -245,14 +237,14 @@ const DroneList: React.FC<DroneListProps> = ({ drones }) => {
           <div className="pt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             <div>
               <Select 
-                value={droneType || ''} 
-                onValueChange={(value) => setDroneType(value || null)}
+                value={droneType || 'all-types'} 
+                onValueChange={(value) => setDroneType(value === 'all-types' ? null : value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Drone Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all-types">All Types</SelectItem>
                   {uniqueTypes.map((type) => (
                     <SelectItem key={type} value={type}>{type}</SelectItem>
                   ))}
@@ -261,14 +253,14 @@ const DroneList: React.FC<DroneListProps> = ({ drones }) => {
             </div>
             <div>
               <Select 
-                value={batteryFilter || ''} 
-                onValueChange={(value) => setBatteryFilter(value || null)}
+                value={batteryFilter || 'all-batteries'} 
+                onValueChange={(value) => setBatteryFilter(value === 'all-batteries' ? null : value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Battery Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Batteries</SelectItem>
+                  <SelectItem value="all-batteries">All Batteries</SelectItem>
                   {uniqueBatteries.map((battery) => (
                     <SelectItem key={battery} value={battery}>{battery}</SelectItem>
                   ))}
