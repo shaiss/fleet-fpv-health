@@ -99,13 +99,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Project
 
-**URL**: https://lovable.dev/projects/f047a98e-af44-48f8-bd6d-fb911ad570ff
+**URL**: fleet-fpv-health.lovable.app
 
 ## Development
-
-### Using Lovable
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/f047a98e-af44-48f8-bd6d-fb911ad570ff) and start prompting.
 
 ### Local Development
 
