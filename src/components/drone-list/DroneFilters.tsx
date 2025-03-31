@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Filter, Search, ChevronDown, List, Grid, SlidersHorizontal } from 'lucide-react';
+import { Filter, Search, ChevronDown, List, Grid, SlidersHorizontal, RotateCcw } from 'lucide-react';
 import { DroneData } from '@/utils/csvParser';
 
 interface ColumnFilter {
@@ -75,7 +76,7 @@ const DroneFilters: React.FC<DroneFiltersProps> = ({
   };
 
   const filterColumns: (keyof DroneData)[] = [
-    'quadName', 'type', 'batteryType', 'camera', 'flightTest', 'readyForFieldTesting'
+    'type', 'batteryType', 'camera', 'flightTest', 'readyForFieldTesting'
   ];
 
   const getColumnLabel = (column: keyof DroneData): string => {
@@ -99,6 +100,10 @@ const DroneFilters: React.FC<DroneFiltersProps> = ({
     
     return columnLabels[column] || String(column);
   };
+
+  const filtersActive = columnFilters.length > 0 || filterStatus !== null || 
+                        droneType !== null || batteryFilter !== null || 
+                        searchTerm !== '';
 
   return (
     <>
@@ -179,6 +184,14 @@ const DroneFilters: React.FC<DroneFiltersProps> = ({
                 </div>
               ))}
             </div>
+            {filtersActive && (
+              <div className="mt-2 px-2 pb-2">
+                <Button variant="outline" size="sm" onClick={resetFilters} className="w-full gap-2">
+                  <RotateCcw className="h-3 w-3" />
+                  Reset All Filters
+                </Button>
+              </div>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
         <Button 
@@ -197,10 +210,20 @@ const DroneFilters: React.FC<DroneFiltersProps> = ({
         >
           <Grid className="h-4 w-4" />
         </Button>
+        {filtersActive && (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={resetFilters} 
+            title="Reset all filters"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </Button>
+        )}
       </div>
       
       {showAdvancedFilters && (
-        <div className="pt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="pt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <Select 
               value={droneType || 'all-types'} 
@@ -232,11 +255,6 @@ const DroneFilters: React.FC<DroneFiltersProps> = ({
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <div className="flex items-center justify-end">
-            <Button variant="outline" size="sm" onClick={resetFilters}>
-              Reset Filters
-            </Button>
           </div>
         </div>
       )}

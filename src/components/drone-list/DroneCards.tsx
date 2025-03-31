@@ -2,7 +2,6 @@
 import React from 'react';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { DroneData } from '@/utils/csvParser';
 import { Plane, Battery, Camera as CameraIcon, Activity, AlertTriangle, Check, X } from 'lucide-react';
 
@@ -40,11 +39,6 @@ const DroneCards: React.FC<DroneCardsProps> = ({
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <Checkbox 
-                      checked={selectedDrones.has(drone.id)}
-                      onCheckedChange={() => onSelectDrone(drone.id)}
-                      aria-label={`Select drone ${drone.quadName}`}
-                    />
                     <span className="text-xs text-muted-foreground">#{drone.id}</span>
                   </div>
                   <h3 className="font-semibold text-lg mt-1">{drone.quadName}</h3>

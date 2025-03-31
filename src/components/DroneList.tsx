@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { DroneData } from '@/utils/csvParser';
@@ -21,7 +20,7 @@ const DroneList: React.FC<DroneListProps> = ({ drones }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection } | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('table');
+  const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [droneType, setDroneType] = useState<string | null>(null);
   const [batteryFilter, setBatteryFilter] = useState<string | null>(null);
@@ -47,7 +46,6 @@ const DroneList: React.FC<DroneListProps> = ({ drones }) => {
   // Get unique values for each column
   const uniqueValues = React.useMemo(() => {
     const columns: Record<string, Set<string>> = {
-      quadName: new Set<string>(),
       type: new Set<string>(),
       batteryType: new Set<string>(),
       camera: new Set<string>(),
