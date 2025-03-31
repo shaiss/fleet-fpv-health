@@ -1,69 +1,130 @@
-# Welcome to your Lovable project
 
-## Project info
+# Drone Fleet Management Dashboard
 
-**URL**: https://lovable.dev/projects/f047a98e-af44-48f8-bd6d-fb911ad570ff
+A comprehensive web application for drone fleet management that allows uploading, visualization, and filtering of drone data from CSV files.
 
-## How can I edit this code?
+![Drone Fleet Dashboard](https://placeholder-for-project-screenshot.com)
 
-There are several ways of editing your application.
+## Features
 
-**Use Lovable**
+- **CSV Upload**: Easily import your drone fleet data through CSV file uploads
+- **Interactive Dashboard**: View key statistics and distribution charts for your fleet
+- **Advanced Filtering**: Filter drones by multiple criteria including:
+  - Status (Ready for field testing)
+  - Drone type
+  - Battery type
+  - Text search across all fields
+  - Custom column filters
+- **Multiple Views**: Toggle between table and card views to visualize your fleet data
+- **Selection System**: Select individual drones for batch operations
+- **Responsive Design**: Works on desktop and mobile devices
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f047a98e-af44-48f8-bd6d-fb911ad570ff) and start prompting.
+## Technology Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+This project is built with:
 
-**Use your preferred IDE**
+- **React**: UI library for building the interface
+- **TypeScript**: For type-safe code
+- **Tailwind CSS**: For styling components
+- **shadcn/ui**: Component library based on Radix UI
+- **Recharts**: For data visualization
+- **Vite**: For fast development and building
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Prerequisites
 
-Follow these steps:
+- Node.js (v16 or later)
+- npm or yarn package manager
+
+### Installation
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Clone the repository
+git clone <repository-url>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Navigate to the project directory
+cd drone-fleet-management
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:8080` by default.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Usage
 
-**Use GitHub Codespaces**
+1. **Upload a CSV file** containing your drone fleet data
+   - The CSV should have headers matching the expected data structure
+   - Required columns: id, quadName, camera, type, propSize, vtx, rcReceiver, transmitter, batteryType, readyForFieldTesting
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+2. **View the dashboard** showing statistics and visualizations of your fleet
 
-## What technologies are used for this project?
+3. **Filter and search** for specific drones using the filter controls
 
-This project is built with .
+4. **Switch between views** using the table/card view toggle
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Data Structure
 
-## How can I deploy this project?
+The application expects CSV data with the following structure:
 
-Simply open [Lovable](https://lovable.dev/projects/f047a98e-af44-48f8-bd6d-fb911ad570ff) and click on Share -> Publish.
+| Column | Description |
+|--------|-------------|
+| id | Unique identifier for the drone |
+| quadName | Name of the quadcopter |
+| camera | Camera model/status |
+| type | Drone type/model |
+| propSize | Propeller size |
+| vtx | Video transmitter details |
+| rcReceiver | Remote control receiver |
+| transmitter | Transmitter details |
+| externalTransmitter | External transmitter information |
+| txModelNum | Transmitter model number |
+| batteryType | Type of battery used |
+| videoChannel | Video channel information |
+| flightTest | Flight test status |
+| readyForFieldTesting | Field testing readiness (✓ for ready) |
+| notes | Additional notes |
 
-## I want to use a custom domain - is that possible?
+## Contributing
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Project
+
+**URL**: https://lovable.dev/projects/f047a98e-af44-48f8-bd6d-fb911ad570ff
+
+## Development
+
+### Using Lovable
+
+Simply visit the [Lovable Project](https://lovable.dev/projects/f047a98e-af44-48f8-bd6d-fb911ad570ff) and start prompting.
+
+### Local Development
+
+If you want to work locally using your own IDE, you can clone this repo and push changes:
+
+```sh
+# Clone the repository
+git clone <YOUR_GIT_URL>
+
+# Navigate to the project directory
+cd <YOUR_PROJECT_NAME>
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+```
+
+## Deployment
+
+Open [Lovable](https://lovable.dev/projects/f047a98e-af44-48f8-bd6d-fb911ad570ff) and click on Share -> Publish.
