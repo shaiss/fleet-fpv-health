@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,19 +12,16 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Filter, Search, ChevronDown, List, Grid, SlidersHorizontal, RotateCcw } from 'lucide-react';
 import { DroneData } from '@/utils/csvParser';
-
-interface ColumnFilter {
-  column: keyof DroneData | 'all';
-  value: string;
-}
+import { ColumnFilter } from '@/hooks/useDroneFilter';
+import { ViewMode } from '@/hooks/useViewMode';
 
 interface DroneFiltersProps {
   searchTerm: string;
   setSearchTerm: (value: string) => void;
   filterStatus: string | null;
   handleFilterChange: (filterType: string | null) => void;
-  viewMode: 'table' | 'cards';
-  handleViewModeChange: (mode: 'table' | 'cards') => void;
+  viewMode: ViewMode;
+  handleViewModeChange: (mode: ViewMode) => void;
   showAdvancedFilters: boolean;
   setShowAdvancedFilters: (show: boolean) => void;
   droneType: string | null;

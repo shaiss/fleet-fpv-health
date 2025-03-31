@@ -1,177 +1,50 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { DroneData } from '@/utils/csvParser';
 import { DroneTable, DroneCards, DroneFilters } from '@/components/drone-list';
+import { useDroneFilter, ColumnFilter } from '@/hooks/useDroneFilter';
+import { useDroneSelection } from '@/hooks/useDroneSelection';
+import { useViewMode, ViewMode } from '@/hooks/useViewMode';
 
 interface DroneListProps {
   drones: DroneData[];
 }
 
-type ViewMode = 'table' | 'cards';
-type SortKey = keyof DroneData | null;
-type SortDirection = 'asc' | 'desc';
-
-interface ColumnFilter {
-  column: keyof DroneData | 'all';
-  value: string;
-}
-
 const DroneList: React.FC<DroneListProps> = ({ drones }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState<string | null>(null);
-  const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection } | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('cards');
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [droneType, setDroneType] = useState<string | null>(null);
-  const [batteryFilter, setBatteryFilter] = useState<string | null>(null);
-  const [selectedDrones, setSelectedDrones] = useState<Set<number>>(new Set());
-  const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
+  const {
+    searchTerm,
+    setSearchTerm,
+    filterStatus,
+    handleFilterChange,
+    sortConfig,
+    droneType,
+    setDroneType,
+    batteryFilter,
+    setBatteryFilter,
+    columnFilters,
+    setColumnFilters,
+    sortedDrones,
+    uniqueTypes,
+    uniqueBatteries,
+    uniqueValues,
+    handleSort,
+    resetFilters,
+    filtersActive
+  } = useDroneFilter(drones);
 
-  const uniqueTypes = React.useMemo(() => {
-    const types = new Set<string>();
-    drones.forEach(drone => {
-      if (drone.type) types.add(drone.type);
-    });
-    return Array.from(types).sort();
-  }, [drones]);
+  const {
+    viewMode,
+    handleViewModeChange,
+    showAdvancedFilters,
+    setShowAdvancedFilters
+  } = useViewMode();
 
-  const uniqueBatteries = React.useMemo(() => {
-    const batteries = new Set<string>();
-    drones.forEach(drone => {
-      if (drone.batteryType) batteries.add(drone.batteryType);
-    });
-    return Array.from(batteries).sort();
-  }, [drones]);
-
-  // Get unique values for each column
-  const uniqueValues = React.useMemo(() => {
-    const columns: Record<string, Set<string>> = {
-      type: new Set<string>(),
-      batteryType: new Set<string>(),
-      camera: new Set<string>(),
-      flightTest: new Set<string>(),
-      readyForFieldTesting: new Set<string>(),
-    };
-    
-    drones.forEach(drone => {
-      Object.entries(drone).forEach(([key, value]) => {
-        if (key in columns && value) {
-          columns[key].add(String(value));
-        }
-      });
-    });
-    
-    const result: Record<string, string[]> = {};
-    Object.entries(columns).forEach(([key, values]) => {
-      result[key] = Array.from(values).sort();
-    });
-    
-    return result;
-  }, [drones]);
-
-  const handleSort = (key: keyof DroneData) => {
-    let direction: SortDirection = 'asc';
-    
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    
-    setSortConfig({ key, direction });
-  };
-
-  const handleFilterChange = (filterType: string | null) => {
-    setFilterStatus(filterType);
-  };
-
-  const handleViewModeChange = (mode: ViewMode) => {
-    setViewMode(mode);
-  };
-
-  const handleSelectDrone = (id: number) => {
-    const newSelected = new Set(selectedDrones);
-    if (newSelected.has(id)) {
-      newSelected.delete(id);
-    } else {
-      newSelected.add(id);
-    }
-    setSelectedDrones(newSelected);
-  };
-
-  const handleSelectAll = () => {
-    if (selectedDrones.size === filteredDrones.length) {
-      setSelectedDrones(new Set());
-    } else {
-      setSelectedDrones(new Set(filteredDrones.map(drone => drone.id)));
-    }
-  };
-
-  const resetFilters = () => {
-    setSearchTerm('');
-    setFilterStatus(null);
-    setDroneType(null);
-    setBatteryFilter(null);
-    setColumnFilters([]);
-    setShowAdvancedFilters(false);
-  };
-
-  const filteredDrones = React.useMemo(() => {
-    return drones.filter(drone => {
-      // Global search
-      const matchesSearch = drone.quadName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        drone.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (drone.notes && drone.notes.toLowerCase().includes(searchTerm.toLowerCase()));
-      
-      // Status filter
-      let matchesStatus = true;
-      if (filterStatus) {
-        if (filterStatus === 'ready') {
-          matchesStatus = drone.readyForFieldTesting === '✓';
-        } else if (filterStatus === 'not-ready') {
-          matchesStatus = drone.readyForFieldTesting !== '✓';
-        } else if (filterStatus === 'needs-repair') {
-          matchesStatus = !!(drone.notes && drone.notes.trim() !== '');
-        } else if (filterStatus === 'camera-issues') {
-          matchesStatus = drone.camera === 'X' || drone.camera !== '✓';
-        } else if (filterStatus === 'flight-test-passed') {
-          matchesStatus = drone.flightTest === '✓';
-        }
-      }
-      
-      // Type filter
-      const matchesType = !droneType || drone.type === droneType;
-      
-      // Battery filter
-      const matchesBattery = !batteryFilter || drone.batteryType === batteryFilter;
-      
-      // Column-specific filters
-      const matchesColumnFilters = columnFilters.every(filter => {
-        const column = filter.column as keyof DroneData;
-        const droneValue = String(drone[column]);
-        return droneValue === filter.value;
-      });
-      
-      return matchesSearch && matchesStatus && matchesType && matchesBattery && matchesColumnFilters;
-    });
-  }, [drones, searchTerm, filterStatus, droneType, batteryFilter, columnFilters]);
-
-  const sortedDrones = React.useMemo(() => {
-    if (!sortConfig) return filteredDrones;
-    
-    return [...filteredDrones].sort((a, b) => {
-      if (!sortConfig.key) return 0;
-      
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
-      
-      if (aValue === bValue) return 0;
-      
-      if (aValue === undefined || aValue === null || aValue === '') return 1;
-      if (bValue === undefined || bValue === null || bValue === '') return -1;
-      
-      const comparison = aValue < bValue ? -1 : 1;
-      return sortConfig.direction === 'asc' ? comparison : -comparison;
-    });
-  }, [filteredDrones, sortConfig]);
+  const {
+    selectedDrones,
+    handleSelectDrone,
+    handleSelectAll
+  } = useDroneSelection();
 
   return (
     <Card>
@@ -208,7 +81,7 @@ const DroneList: React.FC<DroneListProps> = ({ drones }) => {
             sortConfig={sortConfig}
             onSort={handleSort}
             onSelectDrone={handleSelectDrone}
-            onSelectAll={handleSelectAll}
+            onSelectAll={() => handleSelectAll(sortedDrones)}
           />
         ) : (
           <DroneCards
