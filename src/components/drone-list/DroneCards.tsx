@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DroneData } from '@/utils/csvParser';
-import { Plane, Battery, Camera as CameraIcon, Activity, AlertTriangle, Check, X } from 'lucide-react';
+import { Plane, Battery, Camera as CameraIcon, Activity, AlertTriangle, Check, X, Radio, GitBranch } from 'lucide-react';
 
 interface DroneCardsProps {
   drones: DroneData[];
@@ -67,6 +67,14 @@ const DroneCards: React.FC<DroneCardsProps> = ({
                 <div className="flex items-center gap-2">
                   <Activity className="h-4 w-4 text-muted-foreground" />
                   <span>{renderStatusIcon(drone.flightTest)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Radio className="h-4 w-4 text-muted-foreground" />
+                  <span>{drone.rcReceiver || 'N/A'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <GitBranch className="h-4 w-4 text-muted-foreground" />
+                  <span>{drone.transmitter || 'N/A'}</span>
                 </div>
               </div>
               {drone.notes && drone.notes.trim() !== "" && (
