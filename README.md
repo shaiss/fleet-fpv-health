@@ -3,7 +3,7 @@
 
 A comprehensive web application for drone fleet management that allows uploading, visualization, and filtering of drone data from CSV files.
 
-![Drone Fleet Dashboard](https://placeholder-for-project-screenshot.com)
+![Drone Fleet Dashboard - Statistics](public/lovable-uploads/938396bc-d2a7-4076-94f1-5f51128762bd.png)
 
 ## Features
 
@@ -18,6 +18,8 @@ A comprehensive web application for drone fleet management that allows uploading
 - **Multiple Views**: Toggle between table and card views to visualize your fleet data
 - **Selection System**: Select individual drones for batch operations
 - **Responsive Design**: Works on desktop and mobile devices
+
+![Drone Fleet Dashboard - Card View](public/lovable-uploads/99c48959-ab02-4093-b276-0af5dbd1460d.png)
 
 ## Technology Stack
 
