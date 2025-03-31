@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -80,7 +79,7 @@ const DroneFilters: React.FC<DroneFiltersProps> = ({
   ];
 
   const getColumnLabel = (column: keyof DroneData): string => {
-    const columnLabels: Record<keyof DroneData, string> = {
+    const columnLabels: Partial<Record<keyof DroneData, string>> = {
       id: 'ID',
       quadName: 'Quad Name',
       camera: 'Camera',
@@ -88,9 +87,17 @@ const DroneFilters: React.FC<DroneFiltersProps> = ({
       batteryType: 'Battery Type',
       flightTest: 'Flight Test',
       readyForFieldTesting: 'Field Ready',
-      notes: 'Notes'
+      notes: 'Notes',
+      propSize: 'Prop Size',
+      vtx: 'VTX',
+      rcReceiver: 'RC Receiver',
+      transmitter: 'Transmitter',
+      externalTransmitter: 'External Transmitter',
+      txModelNum: 'TX Model Number',
+      videoChannel: 'Video Channel'
     };
-    return columnLabels[column] || column;
+    
+    return columnLabels[column] || String(column);
   };
 
   return (
@@ -163,8 +170,8 @@ const DroneFilters: React.FC<DroneFiltersProps> = ({
                     <SelectContent>
                       <SelectItem value="all-values">All Values</SelectItem>
                       {uniqueValues[column]?.map((value) => (
-                        <SelectItem key={`${column}-${value}`} value={value}>
-                          {value}
+                        <SelectItem key={`${column}-${value}`} value={value || 'empty'}>
+                          {value || '(Empty)'}
                         </SelectItem>
                       ))}
                     </SelectContent>
