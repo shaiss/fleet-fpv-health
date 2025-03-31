@@ -12,6 +12,11 @@ type ViewMode = 'table' | 'cards';
 type SortKey = keyof DroneData | null;
 type SortDirection = 'asc' | 'desc';
 
+interface ColumnFilter {
+  column: keyof DroneData | 'all';
+  value: string;
+}
+
 const DroneList: React.FC<DroneListProps> = ({ drones }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
@@ -21,6 +26,7 @@ const DroneList: React.FC<DroneListProps> = ({ drones }) => {
   const [droneType, setDroneType] = useState<string | null>(null);
   const [batteryFilter, setBatteryFilter] = useState<string | null>(null);
   const [selectedDrones, setSelectedDrones] = useState<Set<number>>(new Set());
+  const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
 
   const uniqueTypes = React.useMemo(() => {
     const types = new Set<string>();
@@ -36,6 +42,33 @@ const DroneList: React.FC<DroneListProps> = ({ drones }) => {
       if (drone.batteryType) batteries.add(drone.batteryType);
     });
     return Array.from(batteries).sort();
+  }, [drones]);
+
+  // Get unique values for each column
+  const uniqueValues = React.useMemo(() => {
+    const columns: Record<string, Set<string>> = {
+      quadName: new Set<string>(),
+      type: new Set<string>(),
+      batteryType: new Set<string>(),
+      camera: new Set<string>(),
+      flightTest: new Set<string>(),
+      readyForFieldTesting: new Set<string>(),
+    };
+    
+    drones.forEach(drone => {
+      Object.entries(drone).forEach(([key, value]) => {
+        if (key in columns && value) {
+          columns[key].add(String(value));
+        }
+      });
+    });
+    
+    const result: Record<string, string[]> = {};
+    Object.entries(columns).forEach(([key, values]) => {
+      result[key] = Array.from(values).sort();
+    });
+    
+    return result;
   }, [drones]);
 
   const handleSort = (key: keyof DroneData) => {
@@ -79,15 +112,18 @@ const DroneList: React.FC<DroneListProps> = ({ drones }) => {
     setFilterStatus(null);
     setDroneType(null);
     setBatteryFilter(null);
+    setColumnFilters([]);
     setShowAdvancedFilters(false);
   };
 
   const filteredDrones = React.useMemo(() => {
     return drones.filter(drone => {
+      // Global search
       const matchesSearch = drone.quadName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         drone.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (drone.notes && drone.notes.toLowerCase().includes(searchTerm.toLowerCase()));
       
+      // Status filter
       let matchesStatus = true;
       if (filterStatus) {
         if (filterStatus === 'ready') {
@@ -103,13 +139,22 @@ const DroneList: React.FC<DroneListProps> = ({ drones }) => {
         }
       }
       
+      // Type filter
       const matchesType = !droneType || drone.type === droneType;
       
+      // Battery filter
       const matchesBattery = !batteryFilter || drone.batteryType === batteryFilter;
       
-      return matchesSearch && matchesStatus && matchesType && matchesBattery;
+      // Column-specific filters
+      const matchesColumnFilters = columnFilters.every(filter => {
+        const column = filter.column as keyof DroneData;
+        const droneValue = String(drone[column]);
+        return droneValue === filter.value;
+      });
+      
+      return matchesSearch && matchesStatus && matchesType && matchesBattery && matchesColumnFilters;
     });
-  }, [drones, searchTerm, filterStatus, droneType, batteryFilter]);
+  }, [drones, searchTerm, filterStatus, droneType, batteryFilter, columnFilters]);
 
   const sortedDrones = React.useMemo(() => {
     if (!sortConfig) return filteredDrones;
@@ -151,6 +196,9 @@ const DroneList: React.FC<DroneListProps> = ({ drones }) => {
             resetFilters={resetFilters}
             uniqueTypes={uniqueTypes}
             uniqueBatteries={uniqueBatteries}
+            columnFilters={columnFilters}
+            setColumnFilters={setColumnFilters}
+            uniqueValues={uniqueValues}
           />
         </div>
       </CardHeader>
@@ -172,7 +220,7 @@ const DroneList: React.FC<DroneListProps> = ({ drones }) => {
           />
         )}
       </CardContent>
-      <CardFooter className="flex justify-between p-4 border-t">
+      <CardFooter className="flex justify-between items-center p-4 border-t">
         <div>
           {selectedDrones.size > 0 && (
             <span className="text-sm text-muted-foreground">
@@ -180,8 +228,15 @@ const DroneList: React.FC<DroneListProps> = ({ drones }) => {
             </span>
           )}
         </div>
-        <div className="text-sm text-muted-foreground">
-          Showing {sortedDrones.length} of {drones.length} drones
+        <div className="flex items-center gap-2">
+          {columnFilters.length > 0 && (
+            <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
+              {columnFilters.length} column filter{columnFilters.length !== 1 ? 's' : ''}
+            </span>
+          )}
+          <span className="text-sm text-muted-foreground">
+            Showing {sortedDrones.length} of {drones.length} drones
+          </span>
         </div>
       </CardFooter>
     </Card>

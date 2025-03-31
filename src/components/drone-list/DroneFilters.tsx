@@ -11,7 +11,13 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Filter, Search, ChevronDown, List, Grid } from 'lucide-react';
+import { Filter, Search, ChevronDown, List, Grid, SlidersHorizontal } from 'lucide-react';
+import { DroneData } from '@/utils/csvParser';
+
+interface ColumnFilter {
+  column: keyof DroneData | 'all';
+  value: string;
+}
 
 interface DroneFiltersProps {
   searchTerm: string;
@@ -29,6 +35,9 @@ interface DroneFiltersProps {
   resetFilters: () => void;
   uniqueTypes: string[];
   uniqueBatteries: string[];
+  columnFilters: ColumnFilter[];
+  setColumnFilters: (filters: ColumnFilter[]) => void;
+  uniqueValues: Record<string, string[]>;
 }
 
 const DroneFilters: React.FC<DroneFiltersProps> = ({
@@ -47,7 +56,43 @@ const DroneFilters: React.FC<DroneFiltersProps> = ({
   resetFilters,
   uniqueTypes,
   uniqueBatteries,
+  columnFilters,
+  setColumnFilters,
+  uniqueValues,
 }) => {
+  const getColumnFilterValue = (column: keyof DroneData | 'all') => {
+    const filter = columnFilters.find(f => f.column === column);
+    return filter ? filter.value : '';
+  };
+
+  const handleColumnFilterChange = (column: keyof DroneData | 'all', value: string) => {
+    if (value === 'all-values') {
+      setColumnFilters(columnFilters.filter(f => f.column !== column));
+    } else {
+      const newFilters = columnFilters.filter(f => f.column !== column);
+      newFilters.push({ column, value });
+      setColumnFilters(newFilters);
+    }
+  };
+
+  const filterColumns: (keyof DroneData)[] = [
+    'quadName', 'type', 'batteryType', 'camera', 'flightTest', 'readyForFieldTesting'
+  ];
+
+  const getColumnLabel = (column: keyof DroneData): string => {
+    const columnLabels: Record<keyof DroneData, string> = {
+      id: 'ID',
+      quadName: 'Quad Name',
+      camera: 'Camera',
+      type: 'Type',
+      batteryType: 'Battery Type',
+      flightTest: 'Flight Test',
+      readyForFieldTesting: 'Field Ready',
+      notes: 'Notes'
+    };
+    return columnLabels[column] || column;
+  };
+
   return (
     <>
       <div className="flex w-full sm:w-auto gap-2">
@@ -92,6 +137,41 @@ const DroneFilters: React.FC<DroneFiltersProps> = ({
             <DropdownMenuItem onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
               {showAdvancedFilters ? 'Hide' : 'Show'} Advanced Filters
             </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="gap-1">
+              <SlidersHorizontal className="h-4 w-4" />
+              Columns
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-64">
+            <DropdownMenuLabel>Filter By Column</DropdownMenuLabel>
+            <div className="max-h-[70vh] overflow-auto">
+              {filterColumns.map((column) => (
+                <div key={column} className="px-2 py-1.5">
+                  <div className="mb-1 text-xs font-semibold">{getColumnLabel(column)}</div>
+                  <Select
+                    value={getColumnFilterValue(column) || 'all-values'}
+                    onValueChange={(value) => handleColumnFilterChange(column, value)}
+                  >
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue placeholder={`All ${getColumnLabel(column)}s`} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all-values">All Values</SelectItem>
+                      {uniqueValues[column]?.map((value) => (
+                        <SelectItem key={`${column}-${value}`} value={value}>
+                          {value}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ))}
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
         <Button 
