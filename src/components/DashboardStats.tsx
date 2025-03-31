@@ -3,7 +3,7 @@ import React from 'react';
 import { DroneData, getStatusCounters } from '@/utils/csvParser';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Drone, AlertTriangle, CheckCircle, Camera, Activity } from 'lucide-react';
+import { Plane, AlertTriangle, CheckCircle, Camera, Activity } from 'lucide-react';
 
 interface DashboardStatsProps {
   drones: DroneData[];
@@ -18,7 +18,7 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ drones }) => {
       <StatCard 
         title="Total Drones" 
         value={stats.total.toString()} 
-        icon={<Drone className="h-6 w-6 text-primary" />} 
+        icon={<Plane className="h-6 w-6 text-primary" />} 
       />
       <StatCard 
         title="Ready for Field" 

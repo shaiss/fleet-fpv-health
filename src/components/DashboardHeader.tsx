@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Drone } from 'lucide-react';
+import { Drone } from '@/components/icons/Drone';
 
 const DashboardHeader: React.FC = () => {
   return (
